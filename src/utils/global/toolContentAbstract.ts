@@ -3,6 +3,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 
 import type { ProcessButton } from "./.processClass";
+import { getCloseEventName } from "./common";
 import { SidekickThemeProvider } from "./theme";
 
 type ProcessButtonConstructor<T extends ProcessButton> = {
@@ -33,6 +34,8 @@ export function buildGetRootContainer<T extends ProcessButton>(toolClass: Proces
             roots.delete(toolId);
         }
     }
+
+    window.addEventListener(getCloseEventName(`${toolClass.prefixId}${toolClass.id}`), unmountIfNeeded);
 
     const getRootContainer = () =>
         new Promise(() => {

@@ -30,7 +30,7 @@ import BlackWhiteIconButton from "../utils/components/BlackWhiteIconButton";
 import DetailsSnackbar from "../utils/components/DetailsSnackbar";
 import OpenOptionsButton from "../utils/components/OpenOptionsButton";
 import PanelDrawerItem from "../utils/components/PanelDrawer/PanelDrawerItem";
-import { debugLog, getBridgeEventName, isArraysEquals, setStyle } from "../utils/global/common";
+import { debugLog, getBridgeEventName, getCloseEventName, isArraysEquals, setStyle } from "../utils/global/common";
 import MessageManager from "../utils/global/MessageManager";
 import { SidekickThemeProvider } from "../utils/global/theme";
 import SpDevToolsContextProvider, { useSpDevTools } from "../utils/global/spContext";
@@ -124,9 +124,14 @@ const MainScreenCustomPanel: React.FunctionComponent = () => {
                     panelWidth = MAIN_MENU_WIDTH;
                 }
             }
-            // Make room for the side bar and the opened panel next to the Zoho CRM page
+            // Make room for the side bar and the opened panel next to the Zoho CRM page. Zoho centers the body
+            // with auto margins, so pin it to the left or the freed space ends up split on both sides.
             setStyle(document, "resizezohomainscreen", {
-                body: [`width: calc(100% - ${drawerButtonWidth + panelWidth}px) !important`]
+                body: [
+                    `width: calc(100% - ${drawerButtonWidth + panelWidth}px) !important`,
+                    "margin-left: 0 !important",
+                    "margin-right: 0 !important"
+                ]
             });
         };
 
@@ -183,6 +188,8 @@ const MainScreenCustomPanel: React.FunctionComponent = () => {
     }, []);
 
     const closeProcess = useCallback((processId: string) => {
+        // Let the tool unmount while its container is still attached, so nothing measures a detached node
+        window.dispatchEvent(new CustomEvent(getCloseEventName(processId)));
         setOpenedProcesses((prev) => {
             const processToCloseIndex: ToolPanelButton | undefined = prev[processId];
             if (!processToCloseIndex) {

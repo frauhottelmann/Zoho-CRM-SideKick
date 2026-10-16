@@ -201,3 +201,8 @@ export type StringKeys<T> = {
 export function getBridgeEventName(toolId: string) {
     return `${toolId}:${BRIDGE_SUFFIX}`;
 }
+
+/** Fired by the side panel right before it removes a tool's container from the page. */
+export function getCloseEventName(toolId: string) {
+    return `${toolId}:close`;
+}
