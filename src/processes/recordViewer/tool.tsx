@@ -160,7 +160,7 @@ function RecordViewerContent() {
                 <Alert severity="warning">The module "{location.moduleTab}" is not available through the API.</Alert>
             )}
 
-            <Box flex="1 1 auto" minHeight={0} overflow={view === "json" ? "auto" : "hidden"}>
+            <Box flex="1 1 auto" minHeight={200} overflow={view === "json" ? "auto" : "hidden"}>
                 {view === "fields" ? (
                     <DataGrid
                         rows={rows}

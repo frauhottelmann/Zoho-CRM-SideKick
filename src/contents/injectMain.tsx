@@ -1,11 +1,11 @@
-import { unstable_ClassNameGenerator as ClassNameGenerator } from "@mui/material/className";
+import "~utils/global/classNamePrefix";
 import type { PlasmoCSConfig, PlasmoCSUIJSXContainer, PlasmoRender } from "plasmo";
 import { createRoot } from "react-dom/client";
 
 import { MainScreen } from "~processes/main";
 import { ProcessButton } from "~utils/global/.processClass";
 import { isZohoCrmPage } from "~utils/zoho/environment";
-import { DRAWER_CONTAINER_ID, MESSAGE_SOURCE_Content, PROJECT_PREFIX } from "~utils/global/var";
+import { DRAWER_CONTAINER_ID, EXTENSION_STORAGE_SUFFIX, MESSAGE_SOURCE_Content, PROJECT_PREFIX } from "~utils/global/var";
 
 export const config: PlasmoCSConfig = {
     matches: [
@@ -30,11 +30,14 @@ export const config: PlasmoCSConfig = {
 };
 
 var messageListenerReady = false;
+// Re-checks the mount conditions once the bridge is ready, even if the page DOM no longer changes
+var onListenerReady: (() => void) | null = null;
 
 const onMessage = (event: MessageEvent) => {
     if (event.data?.source === MESSAGE_SOURCE_Content && event.data?.type === `${PROJECT_PREFIX}messageListenerReady`) {
         messageListenerReady = true;
         window.removeEventListener("message", onMessage);
+        onListenerReady?.();
     }
 };
 window.addEventListener("message", onMessage);
@@ -46,7 +49,13 @@ export const getRootContainer = () =>
             if (resolved) return;
             const mainContent = document.body;
 
-            if (mainContent && isZohoCrmPage(window.location.href) && messageListenerReady) {
+            // The bridge marks the document right before it starts listening, so this also covers the case
+            // where its "ready" message was posted before this script loaded
+            const bridgeReady =
+                messageListenerReady ||
+                document.documentElement.hasAttribute(PROJECT_PREFIX + EXTENSION_STORAGE_SUFFIX);
+
+            if (mainContent && isZohoCrmPage(window.location.href) && bridgeReady) {
                 const drawerContainer = document.createElement("div");
                 drawerContainer.id = ProcessButton.prefixId + DRAWER_CONTAINER_ID;
                 mainContent.append(drawerContainer);
@@ -58,6 +67,7 @@ export const getRootContainer = () =>
 
         const observer = new MutationObserver(checkAndResolve);
         observer.observe(document.documentElement, { childList: true, subtree: true });
+        onListenerReady = checkAndResolve;
         checkAndResolve();
     });
 
@@ -71,7 +81,5 @@ export const render: PlasmoRender<PlasmoCSUIJSXContainer> = async ({
     });
     root.render(<MainScreen />);
 };
-
-ClassNameGenerator.configure((componentName) => `${PROJECT_PREFIX}${componentName.replace("Mui", "")}`);
 
 export default () => null;

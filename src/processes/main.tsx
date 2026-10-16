@@ -32,6 +32,7 @@ import OpenOptionsButton from "../utils/components/OpenOptionsButton";
 import PanelDrawerItem from "../utils/components/PanelDrawer/PanelDrawerItem";
 import { debugLog, getBridgeEventName, isArraysEquals, setStyle } from "../utils/global/common";
 import MessageManager from "../utils/global/MessageManager";
+import { SidekickThemeProvider } from "../utils/global/theme";
 import SpDevToolsContextProvider, { useSpDevTools } from "../utils/global/spContext";
 import {
     APPLICATION_NAME,
@@ -47,6 +48,7 @@ export const MainScreen: React.FunctionComponent = () => {
     return (
         // <React.StrictMode>
         <StyledEngineProvider injectFirst>
+            <SidekickThemeProvider>
             <SnackbarProvider
                 dense
                 maxSnack={5}
@@ -57,6 +59,7 @@ export const MainScreen: React.FunctionComponent = () => {
                     <MainScreenCustomPanel />
                 </SpDevToolsContextProvider>
             </SnackbarProvider>
+            </SidekickThemeProvider>
         </StyledEngineProvider>
         // </React.StrictMode>
     );

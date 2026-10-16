@@ -72,7 +72,7 @@ function MetadataBrowserContent() {
                     </Tooltip>
                 </Stack>
                 <QueryError query={modules} />
-                <Box flex="1 1 auto" minHeight={0}>
+                <Box flex="1 1 auto" minHeight={200}>
                     <DataGrid
                         rows={modules.data ?? []}
                         columns={moduleColumns}
@@ -115,7 +115,7 @@ function ModuleDetails(props: { module: ZohoModule }) {
                 <Tab label="Related lists" />
                 <Tab label="Module JSON" />
             </Tabs>
-            <Box flex="1 1 auto" minHeight={0}>
+            <Box flex="1 1 auto" minHeight={200}>
                 {tab === 0 && <FieldsGrid moduleApiName={module.api_name} />}
                 {tab === 1 && <LayoutsGrid moduleApiName={module.api_name} />}
                 {tab === 2 && <RelatedListsGrid moduleApiName={module.api_name} />}

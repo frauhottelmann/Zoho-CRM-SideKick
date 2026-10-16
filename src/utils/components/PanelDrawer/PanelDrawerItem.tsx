@@ -25,7 +25,7 @@ function PanelDrawerItem(props: PanelDrawerItemProps & PropsWithChildren) {
                         top: 'unset',
                         bottom: 0,
                         right: 47,
-                        height: `calc(100% - 3.43rem)`,
+                        height: `calc(100% - 34px)`,
                         zIndex: 1199,
                         width: width,
                         overflow: "visible",

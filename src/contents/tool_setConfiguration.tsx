@@ -1,3 +1,4 @@
+import "~utils/global/classNamePrefix";
 import type { PlasmoCSConfig } from "plasmo";
 
 import SetConfigurationProcess from "~processes/setConfiguration/tool";
