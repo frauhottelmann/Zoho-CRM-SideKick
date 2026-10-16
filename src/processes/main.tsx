@@ -487,7 +487,7 @@ function MainScreenFooter() {
                 <Divider />
                 <Stack spacing={1} mt="5px" direction="row" alignItems="center" ml="auto">
                     <Tooltip title={<Typography>Github project</Typography>} arrow disableInteractive>
-                        <a href="https://github.com/frauhottelmann/PowerCRM-SideKick-365" target="_blank" rel="noreferrer">
+                        <a href="https://github.com/frauhottelmann/Zoho-CRM-SideKick" target="_blank" rel="noreferrer">
                             <BlackWhiteIconButton size="small" color="#2dba4e">
                                 <GitHubIcon fontSize="inherit" />
                             </BlackWhiteIconButton>
@@ -495,7 +495,7 @@ function MainScreenFooter() {
                     </Tooltip>
                     <Tooltip title={<Typography>Report an issue</Typography>} arrow disableInteractive>
                         <a
-                            href="https://github.com/frauhottelmann/PowerCRM-SideKick-365/issues/new"
+                            href="https://github.com/frauhottelmann/Zoho-CRM-SideKick/issues/new"
                             target="_blank"
                             rel="noreferrer">
                             <BlackWhiteIconButton size="small" color="#df5050">

@@ -14,7 +14,7 @@ export type TYPE_DontShowInfo = { [infoName: string]: boolean };
 
 export const DRAWER_CONTAINER_ID = "drawercontainer";
 
-export const APPLICATION_NAME = "PowerCRM SideKick Zoho";
+export const APPLICATION_NAME = "Zoho CRM SideKick";
 export const MAIN_MENU_ID = "zoho-sidekick-mainmenu";
 
 export const MESSAGE_SOURCE_WebPage = `${PROJECT_PREFIX}-webPage`;
