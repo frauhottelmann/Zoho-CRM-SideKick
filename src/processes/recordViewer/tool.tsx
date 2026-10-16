@@ -20,7 +20,6 @@ import useCopyWithSnack from "../../utils/hooks/use/useCopyWithSnack";
 import { getRecordLocation } from "../../utils/zoho/environment";
 import { useLocationHref } from "../../utils/zoho/useLocationHref";
 import { useZohoFields, useZohoModules, useZohoRecord } from "../../utils/zoho/ZohoApi";
-import { useLoginWhen, ZohoAuthGate } from "../../utils/zoho/ZohoAuthGate";
 
 class RecordViewerProcess extends ProcessButton {
     static id = "recordviewer";
@@ -33,9 +32,7 @@ class RecordViewerProcess extends ProcessButton {
 const RecordViewer = forwardRef<ProcessRef, ProcessProps>(function RecordViewerProcess(props: ProcessProps, ref) {
     return (
         <SnackbarProvider dense maxSnack={3}>
-            <ZohoAuthGate>
-                <RecordViewerContent />
-            </ZohoAuthGate>
+            <RecordViewerContent />
         </SnackbarProvider>
     );
 });
@@ -53,7 +50,6 @@ function RecordViewerContent() {
     const location = useMemo(() => getRecordLocation(href), [href]);
 
     const modules = useZohoModules();
-    useLoginWhen(modules.authRequired);
 
     // The URL contains the module's "module_name" (e.g. Potentials), the API needs its "api_name" (e.g. Deals)
     const module = useMemo(
@@ -67,7 +63,6 @@ function RecordViewerContent() {
     );
 
     const record = useZohoRecord(module?.api_name ?? null, location?.recordId ?? null);
-    useLoginWhen(record.authRequired);
     const fields = useZohoFields(module?.api_name ?? null);
 
     const [view, setView] = useState<"fields" | "json">("fields");
@@ -160,7 +155,7 @@ function RecordViewerContent() {
                 </Tooltip>
             </Stack>
 
-            {error && !record.authRequired && !modules.authRequired && <Alert severity="error">{error}</Alert>}
+            {error && <Alert severity="error">{error}</Alert>}
             {unknownModule && (
                 <Alert severity="warning">The module "{location.moduleTab}" is not available through the API.</Alert>
             )}

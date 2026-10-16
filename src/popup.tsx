@@ -1,19 +1,18 @@
 import BugReportIcon from "@mui/icons-material/BugReport";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import { Divider, Paper, TextField, Tooltip } from "@mui/material";
+import { Divider, Paper, Tooltip } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 
 import BlackWhiteIconButton from "~utils/components/BlackWhiteIconButton";
-import { APPLICATION_NAME, STORAGE_DontShowInfo, STORAGE_ListName, STORAGE_ZohoClientId } from "~utils/global/var";
+import { APPLICATION_NAME, STORAGE_DontShowInfo, STORAGE_ListName } from "~utils/global/var";
 import { useChromeStorage } from "~utils/hooks/use/useChromeStorage";
 import { MessageType } from "~utils/types/Message";
 import type { StorageConfiguration } from "~utils/types/StorageConfiguration";
-import type { ZohoAuthStatus } from "~utils/zoho/types";
 
 import packageJson from "../package.json";
 
@@ -21,35 +20,6 @@ const REPOSITORY_URL = "https://github.com/frauhottelmann/PowerCRM-SideKick-365"
 
 const OptionsScreen: React.FunctionComponent = () => {
     const [, setProcessList] = useChromeStorage<StorageConfiguration[]>(STORAGE_ListName);
-    const [authStatus, setAuthStatus] = useState<ZohoAuthStatus | null>(null);
-    const [clientId, setClientId] = useState("");
-    const [message, setMessage] = useState<string | null>(null);
-
-    useEffect(() => {
-        chrome.runtime.sendMessage({ type: MessageType.ZOHO_AUTHSTATUS }, setAuthStatus);
-        chrome.storage.sync
-            .get(STORAGE_ZohoClientId)
-            .then((stored) => setClientId(stored?.[STORAGE_ZohoClientId] ?? ""));
-    }, []);
-
-    const saveClientId = useCallback(() => {
-        chrome.runtime.sendMessage({ type: MessageType.ZOHO_SETCLIENTID, data: { clientId } }, (status) => {
-            setAuthStatus(status);
-            setMessage(
-                clientId.trim()
-                    ? "Client ID saved. Log in from the side panel on a Zoho CRM page."
-                    : "Client ID removed."
-            );
-        });
-    }, [clientId]);
-
-    const logoutAll = useCallback(() => {
-        chrome.runtime.sendMessage({ type: MessageType.ZOHO_LOGOUTALL }, (status) => {
-            setAuthStatus(status);
-            setMessage("Logged out of every Zoho data center.");
-        });
-    }, []);
-
     const resetProcessList = useCallback(() => {
         setProcessList(null);
     }, [setProcessList]);
@@ -72,32 +42,6 @@ const OptionsScreen: React.FunctionComponent = () => {
                         {APPLICATION_NAME} adds a panel at the right of Zoho CRM pages.
                     </Typography>
                 </Alert>
-
-                <Typography variant="h6">Zoho API access</Typography>
-                <Typography variant="body2">
-                    Register a <b>Client-based Application</b> in the Zoho API Console and add this redirect URI to it:
-                </Typography>
-                <Typography variant="body2" sx={{ fontFamily: "monospace", wordBreak: "break-all" }}>
-                    {authStatus?.redirectUri ?? "…"}
-                </Typography>
-                <Stack direction="row" spacing={1}>
-                    <TextField
-                        size="small"
-                        label="Client ID"
-                        value={clientId}
-                        onChange={(e) => setClientId(e.target.value)}
-                        fullWidth
-                    />
-                    <Button variant="contained" onClick={saveClientId}>
-                        Save
-                    </Button>
-                </Stack>
-                <Button variant="outlined" onClick={logoutAll}>
-                    Log out of Zoho
-                </Button>
-                {message && <Alert severity="info">{message}</Alert>}
-
-                <Divider />
 
                 <Button variant="contained" onClick={resetProcessList}>
                     Reset Tool List

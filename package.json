@@ -58,7 +58,6 @@
         "typescript": "5.3.3"
     },
     "manifest": {
-        "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2IpSs9+a4m3MQBIFY4/ta6mLLwvyKolL7pfXntJfJSabIIgo97tvVmopGZuKYij6HJPLK13yu8nRqwbtpEL9XcAoNkkqfOtuD1rzT61cwOrILR6YRuAwKB40tVV1/rodhRfs2ff5T4Geg73WvPvkOFF/fhOrG3OmVMUwTk4C6FGe5fVjNCOKbkuLXkOd4uK411dMJ+PhGA98zXRJJvrJ0GE0B6UywIwWGZSblomq5hZud6ow0UnGNjs0/ENC3yC1YzCe/oPVxkzwBpsTi4c5ouzXcFevj/Vt0u69h6+F6vJZfbqQHUJ38TeYvEdN6ngzZjy5YYVzRjfY5F5Z/U4CuQIDAQAB",
         "host_permissions": [
             "https://crm.zoho.com/*",
             "https://crm.zoho.eu/*",
@@ -75,19 +74,10 @@
             "https://crmsandbox.zoho.jp/*",
             "https://crmsandbox.zoho.com.cn/*",
             "https://crmsandbox.zoho.sa/*",
-            "https://crmsandbox.zohocloud.ca/*",
-            "https://*.zohoapis.com/*",
-            "https://*.zohoapis.eu/*",
-            "https://*.zohoapis.in/*",
-            "https://*.zohoapis.com.au/*",
-            "https://*.zohoapis.jp/*",
-            "https://*.zohoapis.com.cn/*",
-            "https://*.zohoapis.sa/*",
-            "https://*.zohoapis.ca/*"
+            "https://crmsandbox.zohocloud.ca/*"
         ],
         "permissions": [
-            "storage",
-            "identity"
+            "storage"
         ],
         "browser_specific_settings": {
             "gecko": {

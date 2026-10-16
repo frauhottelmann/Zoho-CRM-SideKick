@@ -1,5 +1,5 @@
 // Everything the extension needs to know about the Zoho CRM data center and org a page belongs to.
-// Pure functions: used by the page side (tools) and by the background worker.
+// Pure functions, used by the content scripts and the tools.
 
 export interface ZohoEnvironment {
     /** Page origin, e.g. https://crm.zoho.eu */
@@ -7,14 +7,10 @@ export interface ZohoEnvironment {
     /** Data center suffix, e.g. "com", "eu", "com.au", "ca" */
     domainSuffix: string;
     isSandbox: boolean;
-    /** Zoho Accounts server used for OAuth, e.g. https://accounts.zoho.eu */
+    /** Zoho Accounts server of the data center, e.g. https://accounts.zoho.eu */
     accountsDomain: string;
-    /** REST API server, e.g. https://www.zohoapis.eu */
-    apiDomain: string;
     /** Path prefix of the CRM web app including an optional org segment, e.g. "/crm/org20012345/" or "/crm/" */
     crmBasePath: string;
-    /** Storage key that separates tokens of different data centers / sandboxes */
-    key: string;
 }
 
 export interface ZohoRecordLocation {
@@ -66,9 +62,7 @@ export function getZohoEnvironment(url: string | undefined | null): ZohoEnvironm
         domainSuffix,
         isSandbox,
         accountsDomain: `https://accounts.${brand}.${domainSuffix}`,
-        apiDomain: `https://${isSandbox ? "sandbox" : "www"}.zohoapis.${domainSuffix}`,
-        crmBasePath,
-        key: `${isSandbox ? "sandbox" : "prod"}-${domainSuffix}`
+        crmBasePath
     };
 }
 

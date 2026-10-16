@@ -24,5 +24,3 @@ export const BRIDGE_SUFFIX = "bridge-up";
 export const EXTENSION_STORAGE_SUFFIX = "extensionid";
 
 export const isFirefox = typeof navigator !== "undefined" && /firefox/i.test(navigator.userAgent);
-
-export const STORAGE_ZohoClientId = "zohoClientId";

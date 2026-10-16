@@ -14,22 +14,13 @@ A browser extension (Chrome, Edge and Firefox, Manifest V3) that adds a side pan
 | Navigation | Opens Zoho CRM setup pages (modules, users, profiles, roles, workflow rules, blueprints, functions, client scripts, audit log) and the Zoho API Console. |
 | Configuration Manager | Chooses which tools open automatically and whether panels overlay or resize the page. |
 
-All data access is **read-only** (scopes `ZohoCRM.settings.READ`, `ZohoCRM.modules.READ`, `ZohoCRM.users.READ`, `ZohoCRM.org.READ`).
+All data access is **read-only** (GET requests only).
 
-## Setup
+## How it gets data
 
-The tools call the Zoho CRM REST API (v8) with the signed-in user's own permissions. Users only click **Log in with Zoho**; the OAuth client belongs to the extension and is registered **once** by its maintainer:
+There is nothing to set up and no extra login. The tools run inside the Zoho CRM tab and call the CRM's own API endpoints on the same origin (`/crm/<version>/...`), with the session you are already logged in with and the CSRF token Zoho stores in a cookie. Each tab therefore works with the org it shows and with your permissions in that org, so you can keep several customer CRMs open side by side.
 
-1. In the Zoho API Console (for example https://api-console.zoho.eu) add a client of type **Client-based Applications** and enable multi-DC for it.
-   - Homepage URL: this repository
-   - Authorized Redirect URIs:
-     - Chrome / Edge: `https://mamgfglelcnkmhalinaghngoohmpfidb.chromiumapp.org/`
-     - Firefox: `https://e2c23a8c27750856e61f296b4db623458ba1c2c3.extensions.allizom.org/`
-2. Put the client ID into `ZOHO_DEFAULT_CLIENT_ID` in `src/utils/zoho/config.ts` and rebuild.
-
-The redirect URIs stay the same because the extension ID is fixed: `key` in the manifest section of `package.json` (Chrome) and the Gecko ID (Firefox). A store listing gets its own ID, so add the store's redirect URI to the client as well. The popup shows the redirect URI of the running installation and lets you override the client ID for testing.
-
-The extension uses the implicit grant: there is no client secret and no refresh token. Access tokens are kept in local extension storage and expire after an hour; the extension silently requests a new one while the user's Zoho session is active.
+These same-origin endpoints are what the Zoho web app itself uses; they are not a documented public API and may change. All errors are shown in the tool, so a change on Zoho's side shows up as a failed request rather than wrong data.
 
 Supported data centers: `zoho.com`, `zoho.eu`, `zoho.in`, `zoho.com.au`, `zoho.jp`, `zoho.com.cn`, `zoho.sa`, `zohocloud.ca`, including their `crmsandbox` hosts.
 
@@ -47,8 +38,8 @@ Load `build/chrome-mv3-dev` (or `-prod`) as an unpacked extension in `chrome://e
 
 - `src/contents/` content scripts: `crm-sidekick-init.ts` (message bridge), `injectMain.tsx` (side panel), `tool_*.tsx` (one per tool)
 - `src/processes/` the tools: `button.tsx` (menu entry) and `tool.tsx` (panel content)
-- `src/background/` service worker: configuration storage, OAuth and API calls (`zohoAuth.ts`)
-- `src/utils/zoho/` Zoho environment detection, API client hooks and the login gate
+- `src/background/` service worker: configuration storage
+- `src/utils/zoho/` Zoho environment detection and the API client hooks
 
 ## License
 

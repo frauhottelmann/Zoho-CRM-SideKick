@@ -1,37 +1,95 @@
-// Page-side access to Zoho CRM. Requests are forwarded to the background worker,
-// which owns the OAuth token and performs the actual HTTP call.
+// Page-side access to Zoho CRM. The tools run inside the Zoho CRM tab, so requests go to the CRM's own
+// API endpoints on the same origin and use the session the user is already logged in with: no OAuth
+// client, no extra login, and every tab works with the org it shows.
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import MessageManager from "../global/MessageManager";
-import { MessageType } from "../types/Message";
-import type {
-    ZohoApiRequest,
-    ZohoApiResponse,
-    ZohoAuthStatus,
-    ZohoField,
-    ZohoLayout,
-    ZohoModule,
-    ZohoRelatedList
-} from "./types";
+import { getZohoEnvironment } from "./environment";
+import type { ZohoApiRequest, ZohoApiResponse, ZohoField, ZohoLayout, ZohoModule, ZohoRelatedList } from "./types";
 
-export function zohoRequest<T = any>(path: string, params?: ZohoApiRequest["params"]): Promise<ZohoApiResponse<T>> {
-    return MessageManager.sendMessage(MessageType.ZOHO_APIREQUEST, { path, params }).then(
-        (response: ZohoApiResponse<T> | undefined) =>
-            response ?? { ok: false, status: 0, error: "No answer from the extension background." }
-    );
+// API versions the web app serves on its own origin, newest first. The first one that answers is kept.
+const API_VERSIONS = ["v8", "v7", "v6", "v2.2"];
+let workingVersion: string | null = null;
+
+function getCookie(pattern: RegExp): string | null {
+    for (const cookie of document.cookie.split(";")) {
+        const [name, ...value] = cookie.trim().split("=");
+        if (pattern.test(name)) return decodeURIComponent(value.join("="));
+    }
+    return null;
 }
 
-export function getAuthStatus(): Promise<ZohoAuthStatus> {
-    return MessageManager.sendMessage(MessageType.ZOHO_AUTHSTATUS);
+function getSessionHeaders(): Record<string, string> {
+    const headers: Record<string, string> = { Accept: "application/json" };
+
+    // Zoho protects its endpoints with a CSRF token stored in a cookie and echoed in this header
+    const csrfToken = getCookie(/^CSRF_TOKEN$/i) ?? getCookie(/csrf/i);
+    if (csrfToken) headers["X-ZCSRF-TOKEN"] = `crmcsrfparam=${csrfToken}`;
+
+    // Users who belong to several orgs: target the org shown in this tab
+    const orgId = (window as any).crmZgid ?? window.location.pathname.match(/^\/crm\/org(\d+)\//)?.[1];
+    if (orgId) headers["X-CRM-ORG"] = String(orgId);
+
+    return headers;
 }
 
-export function login(): Promise<ZohoAuthStatus> {
-    return MessageManager.sendMessage(MessageType.ZOHO_LOGIN);
+async function fetchVersion<T>(version: string, request: ZohoApiRequest): Promise<ZohoApiResponse<T> | null> {
+    const url = new URL(`${window.location.origin}/crm/${version}/${request.path}`);
+    Object.entries(request.params ?? {}).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) url.searchParams.set(key, String(value));
+    });
+
+    const response = await fetch(url.toString(), {
+        method: "GET",
+        credentials: "include",
+        headers: getSessionHeaders()
+    });
+
+    // This version is not served here: let the caller try the next one
+    if (response.status === 404 && !workingVersion) return null;
+    if (response.status === 204) return { ok: true, status: 204, data: null as T };
+    if (response.status === 401) {
+        return { ok: false, status: 401, error: "The Zoho session expired. Reload the page and log in again." };
+    }
+
+    const isJson = response.headers.get("content-type")?.includes("json");
+    const data = isJson ? await response.json().catch(() => null) : null;
+    if (!isJson && !workingVersion) return null;
+
+    if (!response.ok) {
+        return {
+            ok: false,
+            status: response.status,
+            data,
+            error: data?.message ?? data?.code ?? `Request failed with status ${response.status}.`
+        };
+    }
+    return { ok: true, status: response.status, data };
 }
 
-export function logout(): Promise<ZohoAuthStatus> {
-    return MessageManager.sendMessage(MessageType.ZOHO_LOGOUT);
+export async function zohoRequest<T = any>(
+    path: string,
+    params?: ZohoApiRequest["params"]
+): Promise<ZohoApiResponse<T>> {
+    if (!getZohoEnvironment(window.location.href)) {
+        return { ok: false, status: 0, error: "This tab is not a Zoho CRM page." };
+    }
+    if (!path || /[:?#]|\.\./.test(path) || path.startsWith("/")) {
+        return { ok: false, status: 0, error: "Invalid API path." };
+    }
+
+    try {
+        for (const version of workingVersion ? [workingVersion] : API_VERSIONS) {
+            const response = await fetchVersion<T>(version, { path, params });
+            if (response) {
+                if (response.ok) workingVersion = version;
+                return response;
+            }
+        }
+        return { ok: false, status: 0, error: "Zoho CRM did not answer on any known API version." };
+    } catch (e) {
+        return { ok: false, status: 0, error: e instanceof Error ? e.message : String(e) };
+    }
 }
 
 // Metadata rarely changes while a page is open, so successful answers are cached per tool bundle
@@ -58,7 +116,6 @@ export interface ZohoQueryState<T> {
     data: T | null;
     loading: boolean;
     error: string | null;
-    authRequired: boolean;
     reload: () => void;
 }
 
@@ -71,8 +128,7 @@ export function useZohoQuery<T, R = any>(
     const [state, setState] = useState<Omit<ZohoQueryState<T>, "reload">>({
         data: null,
         loading: !!path,
-        error: null,
-        authRequired: false
+        error: null
     });
     const [reloadCount, setReloadCount] = useState(0);
     const selectRef = useRef(select);
@@ -81,7 +137,7 @@ export function useZohoQuery<T, R = any>(
 
     useEffect(() => {
         if (!path) {
-            setState({ data: null, loading: false, error: null, authRequired: false });
+            setState({ data: null, loading: false, error: null });
             return;
         }
         let cancelled = false;
@@ -93,15 +149,13 @@ export function useZohoQuery<T, R = any>(
                 setState({
                     data: response.data ? selectRef.current(response.data) : null,
                     loading: false,
-                    error: null,
-                    authRequired: false
+                    error: null
                 });
             } else {
                 setState({
                     data: null,
                     loading: false,
-                    error: response.error ?? "Unknown error.",
-                    authRequired: !!response.authRequired
+                    error: response.error ?? "Unknown error."
                 });
             }
         });

@@ -1,14 +1,5 @@
-export interface ZohoAuthStatus {
-    hasClientId: boolean;
-    loggedIn: boolean;
-    /** Redirect URI to register for the client in the Zoho API Console */
-    redirectUri: string;
-    accountsDomain: string | null;
-    error?: string;
-}
-
 export interface ZohoApiRequest {
-    /** Path relative to /crm/v8/, e.g. "settings/modules" */
+    /** Path relative to /crm/<version>/, e.g. "settings/modules" */
     path: string;
     params?: Record<string, string | number | boolean | undefined | null>;
 }
@@ -18,7 +9,6 @@ export interface ZohoApiResponse<T = any> {
     status: number;
     data?: T;
     error?: string;
-    authRequired?: boolean;
 }
 
 export interface ZohoModule {

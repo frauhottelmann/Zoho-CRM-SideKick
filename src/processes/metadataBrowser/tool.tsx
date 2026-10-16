@@ -28,7 +28,6 @@ import {
     useZohoRelatedLists,
     type ZohoQueryState
 } from "../../utils/zoho/ZohoApi";
-import { useLoginWhen, ZohoAuthGate } from "../../utils/zoho/ZohoAuthGate";
 
 class MetadataBrowserProcess extends ProcessButton {
     static id = "metadatabrowser";
@@ -41,16 +40,13 @@ class MetadataBrowserProcess extends ProcessButton {
 const MetadataBrowser = forwardRef<ProcessRef, ProcessProps>(function MetadataBrowserProcess(props: ProcessProps, ref) {
     return (
         <SnackbarProvider dense maxSnack={3}>
-            <ZohoAuthGate>
-                <MetadataBrowserContent />
-            </ZohoAuthGate>
+            <MetadataBrowserContent />
         </SnackbarProvider>
     );
 });
 
 function MetadataBrowserContent() {
     const modules = useZohoModules();
-    useLoginWhen(modules.authRequired);
     const [selectedModule, setSelectedModule] = useState<ZohoModule | null>(null);
     const copy = useCopyWithSnack({ textPrefix: "API name" });
 
@@ -135,7 +131,6 @@ function ModuleDetails(props: { module: ZohoModule }) {
 
 function FieldsGrid(props: { moduleApiName: string }) {
     const fields = useZohoFields(props.moduleApiName);
-    useLoginWhen(fields.authRequired);
     const copy = useCopyWithSnack({ textPrefix: "API name" });
     const [detail, setDetail] = useState<object | null>(null);
 
@@ -196,7 +191,6 @@ function FieldsGrid(props: { moduleApiName: string }) {
 
 function LayoutsGrid(props: { moduleApiName: string }) {
     const layouts = useZohoLayouts(props.moduleApiName);
-    useLoginWhen(layouts.authRequired);
     const [detail, setDetail] = useState<object | null>(null);
 
     const columns = useMemo<GridColDef[]>(
@@ -238,7 +232,6 @@ function LayoutsGrid(props: { moduleApiName: string }) {
 
 function RelatedListsGrid(props: { moduleApiName: string }) {
     const relatedLists = useZohoRelatedLists(props.moduleApiName);
-    useLoginWhen(relatedLists.authRequired);
     const copy = useCopyWithSnack({ textPrefix: "API name" });
 
     const columns = useMemo<GridColDef[]>(
@@ -291,7 +284,7 @@ function copyableCell(copy: (text: string) => void) {
 
 function QueryError(props: { query: ZohoQueryState<any> }) {
     const { query } = props;
-    if (!query.error || query.authRequired) return null;
+    if (!query.error) return null;
     return (
         <Alert severity="error" sx={{ mb: 0.5 }}>
             {query.error}
