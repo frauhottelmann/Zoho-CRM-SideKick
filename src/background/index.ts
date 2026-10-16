@@ -1,15 +1,13 @@
-import { manageImpersonation, resetImpersontation } from "~processes/impersonation/background";
-import { setExtensionConfiguration, getExtensionConfiguration } from "~processes/setConfiguration/background";
-import { getSessionRules } from "~utils/global/DeclarativeNetRequestManager";
+import { getExtensionConfiguration, setExtensionConfiguration } from "~processes/setConfiguration/background";
 import { MessageType } from "~utils/types/Message";
 
-
-chrome.runtime.onMessageExternal.addListener(messagesStation);
 chrome.runtime.onMessage.addListener(messagesStation);
 
-function messagesStation(message: { type: string, data: any }, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) {
-    console.log("background onMessageExternal", message);
-
+function messagesStation(
+    message: { type: string; data: any },
+    sender: chrome.runtime.MessageSender,
+    sendResponse: (response?: any) => void
+) {
     switch (message.type) {
         case MessageType.REFRESHBYPASSCACHE:
             sender.tab && sender.tab.id && chrome.tabs.reload(sender.tab.id, { bypassCache: true });
@@ -18,35 +16,12 @@ function messagesStation(message: { type: string, data: any }, sender: chrome.ru
             sendResponse(sender.tab?.id);
             return true;
 
-        case MessageType.IMPERSONATE:
-            manageImpersonation(message.data, sender).then(sendResponse);
-            return true;
-        case MessageType.GETIMPERSONATION:
-            getSessionRules().then(sendResponse);
-            return true;
-        case MessageType.RESETIMPERSONATION:
-            resetImpersontation(sender).then(sendResponse);
-            return true;
-
         case MessageType.SETCONFIGURATION:
             setExtensionConfiguration(message.data);
             return false;
         case MessageType.GETCONFIGURATION:
             getExtensionConfiguration(message.data).then(sendResponse);
             return true;
-
-        // case MessageType.ENABLESCRIPTOVERRIDING:
-        //     enableScriptOverriding(message.data, sender);
-        //     return false;
-        // case MessageType.DISABLESCRIPTOVERRIDING:
-        //     disableScriptOverride(sender);
-        //     return false;
-        // case MessageType.GETCURRENTSCRIPTOVERRIDING:
-        //     getScriptOverriding(sender).then(sendResponse);
-        //     return true;
-        // case MessageType.ISDEBUGGERATTACHED:
-        //     debuggerAttached(sender).then(sendResponse);
-        //     return true;
 
         case MessageType.OPENOPTIONS:
             chrome.action.openPopup();

@@ -1,9 +1,9 @@
 import { Drawer } from "@mui/material";
 import React, { type PropsWithChildren } from "react";
-import { ProcessButton } from "../../global/.processClass";
+import type { ToolPanelButton } from "../../global/.toolPanelButton";
 
 interface PanelDrawerItemProps {
-    width: ProcessButton['width'];
+    width: ToolPanelButton['width'];
     open: boolean;
 }
 
@@ -25,7 +25,7 @@ function PanelDrawerItem(props: PanelDrawerItemProps & PropsWithChildren) {
                         top: 'unset',
                         bottom: 0,
                         right: 47,
-                        height: `calc(100% - 3.43rem)`,
+                        height: `calc(100% - 34px)`,
                         zIndex: 1199,
                         width: width,
                         overflow: "visible",

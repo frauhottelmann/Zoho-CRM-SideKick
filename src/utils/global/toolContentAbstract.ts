@@ -1,7 +1,10 @@
 import type { PlasmoCSConfig, PlasmoCSUIJSXContainer, PlasmoRender } from "plasmo";
+import React from "react";
 import { createRoot } from "react-dom/client";
 
 import type { ProcessButton } from "./.processClass";
+import { getCloseEventName } from "./common";
+import { SidekickThemeProvider } from "./theme";
 
 type ProcessButtonConstructor<T extends ProcessButton> = {
     new (): T;
@@ -12,7 +15,7 @@ type ProcessButtonConstructor<T extends ProcessButton> = {
 export function buildGetRootContainer<T extends ProcessButton>(toolClass: ProcessButtonConstructor<T>) {
     const toolId = `#${toolClass.prefixId}${toolClass.id}`;
     const instance = new toolClass();
-    const instanceProcess = instance.getProcess();
+    const instanceProcess = React.createElement(SidekickThemeProvider, null, instance.getProcess());
 
     const roots = new Map<string, ReturnType<typeof createRoot>>();
 
@@ -31,6 +34,8 @@ export function buildGetRootContainer<T extends ProcessButton>(toolClass: Proces
             roots.delete(toolId);
         }
     }
+
+    window.addEventListener(getCloseEventName(`${toolClass.prefixId}${toolClass.id}`), unmountIfNeeded);
 
     const getRootContainer = () =>
         new Promise(() => {

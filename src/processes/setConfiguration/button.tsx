@@ -18,7 +18,7 @@ class SetConfigurationButton extends ToolPanelButton {
                 </Typography>
                 <Typography>
                     A <i>"foreground"</i> option is available to <u>disable automatic width adjustments</u> of the main
-                    Dynamics screen.
+                    Zoho CRM screen.
                 </Typography>
             </>
         );

@@ -10,11 +10,11 @@ class MetadataBrowserButton extends ToolPanelButton {
         this.description = (
             <>
                 <Typography>
-                    <i>Explore hidden data.</i>
+                    <i>Explore the structure of your Zoho CRM organization.</i>
                 </Typography>
-                <Typography>This tool lets you see all metadata in this environment.</Typography>
                 <Typography>
-                    <i>Not all columns are displayed by default, but they are available.</i>
+                    Lists all modules with their API names, and for each module its fields (data type, picklist values,
+                    lookups), layouts and related lists. Click an API name to copy it.
                 </Typography>
             </>
         );
