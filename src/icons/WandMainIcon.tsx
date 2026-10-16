@@ -1,14 +1,22 @@
 import { createSvgIcon } from "@mui/material";
 
+// Magic wand with an infinity loop: the extension logo. Source artwork: assets/logo.svg
 export const WandMainIcon = createSvgIcon(
-    <svg
-        viewBox="0 0 24 24"
-        width="24"
-        height="24"
-        transform="scale(-1,1)">
+    <>
         <path
-            d="M7.5 5.6 10 7 8.6 4.5 10 2 7.5 3.4 5 2l1.4 2.5L5 7zm12 9.8L17 14l1.4 2.5L17 19l2.5-1.4L22 19l-1.4-2.5L22 14zM22 2l-2.5 1.4L17 2l1.4 2.5L17 7l2.5-1.4L22 7l-1.4-2.5zm-7.63 5.29a.9959.9959 0 0 0-1.41 0L1.29 18.96c-.39.39-.39 1.02 0 1.41l2.34 2.34c.39.39 1.02.39 1.41 0L16.7 11.05c.39-.39.39-1.02 0-1.41l-2.33-2.35zm-1.03 5.49-2.12-2.12 2.44-2.44 2.12 2.12-2.44 2.44z"
-            fill="#1976d2"></path>
-    </svg>,
+            d="M15.2 7C13.4 4.3 9.6 4.3 9.6 7S13.4 9.7 15.2 7 20.8 4.3 20.8 7 17 9.7 15.2 7Z"
+            fill="none"
+            stroke="#c2185b"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+        />
+        <path d="M3.2 20.8 11.4 12.6" stroke="#1976d2" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M11.4 12.6 13.3 10.7" stroke="#64b5f6" strokeWidth="2.8" strokeLinecap="round" />
+        <path d="M5 2.5 5.6 4.4 7.5 5 5.6 5.6 5 7.5 4.4 5.6 2.5 5 4.4 4.4Z" fill="#1976d2" />
+        <path
+            d="M19.5 13.5 19.95 14.85 21.3 15.3 19.95 15.75 19.5 17.1 19.05 15.75 17.7 15.3 19.05 14.85Z"
+            fill="#c2185b"
+        />
+    </>,
     "WandMain"
 );
