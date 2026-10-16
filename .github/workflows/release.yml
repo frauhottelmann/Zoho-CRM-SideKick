@@ -1,0 +1,55 @@
+name: "Build release packages"
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Use the release tag as extension version
+        if: github.event_name == 'release'
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          VERSION="${TAG#v}"
+          if [[ "$VERSION" =~ ^[0-9]+(\.[0-9]+){0,3}$ ]]; then
+            npm pkg set version="$VERSION"
+          else
+            echo "::warning::Tag $TAG is not a valid extension version, keeping $(npm pkg get version)"
+          fi
+      - name: Build the extension
+        run: pnpm build
+      - name: Package the extension
+        run: pnpm package
+      - name: Rename packages
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          mkdir dist
+          cp build/chrome-mv3-prod.zip "dist/powercrm-sidekick-zoho-chrome-$VERSION.zip"
+          cp build/firefox-mv3-prod.zip "dist/powercrm-sidekick-zoho-firefox-$VERSION.zip"
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-packages
+          path: dist/*.zip
+      - name: Attach packages to the release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" dist/*.zip --clobber --repo "$GITHUB_REPOSITORY"
