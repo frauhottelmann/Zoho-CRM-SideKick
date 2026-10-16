@@ -1,9 +1,9 @@
 {
-    "name": "powercrm-sidekick-365",
-    "displayName": "PowerCRM SideKick 365",
-    "version": "1.2.1",
-    "description": "Enhance your Microsoft Dynamics 365 experience with a custom side panel built for devs and testing.",
-    "author": "Sofiane GUEZZAR <sofiane.guezzar@gmail.com>",
+    "name": "powercrm-sidekick-zoho",
+    "displayName": "PowerCRM SideKick Zoho",
+    "version": "0.1.0",
+    "description": "A side panel for Zoho CRM administrators: metadata browser, record viewer and quick navigation to setup.",
+    "author": "frauhottelmann (based on PowerCRM SideKick 365 by Sofiane GUEZZAR)",
     "scripts": {
         "dev": "plasmo dev",
         "build": "pnpm run build:chrome && pnpm run build:firefox",
@@ -53,22 +53,44 @@
         "@types/react": "18.2.48",
         "@types/react-dom": "18.2.18",
         "@types/react-textfit": "^1.1.4",
-        "@types/xrm": "^9.0.87",
         "crypto-browserify": "^3.12.1",
         "prettier": "3.2.4",
         "typescript": "5.3.3"
     },
     "manifest": {
         "host_permissions": [
-            "*://*/*"
+            "https://crm.zoho.com/*",
+            "https://crm.zoho.eu/*",
+            "https://crm.zoho.in/*",
+            "https://crm.zoho.com.au/*",
+            "https://crm.zoho.jp/*",
+            "https://crm.zoho.com.cn/*",
+            "https://crm.zoho.sa/*",
+            "https://crm.zohocloud.ca/*",
+            "https://crmsandbox.zoho.com/*",
+            "https://crmsandbox.zoho.eu/*",
+            "https://crmsandbox.zoho.in/*",
+            "https://crmsandbox.zoho.com.au/*",
+            "https://crmsandbox.zoho.jp/*",
+            "https://crmsandbox.zoho.com.cn/*",
+            "https://crmsandbox.zoho.sa/*",
+            "https://crmsandbox.zohocloud.ca/*",
+            "https://*.zohoapis.com/*",
+            "https://*.zohoapis.eu/*",
+            "https://*.zohoapis.in/*",
+            "https://*.zohoapis.com.au/*",
+            "https://*.zohoapis.jp/*",
+            "https://*.zohoapis.com.cn/*",
+            "https://*.zohoapis.sa/*",
+            "https://*.zohoapis.ca/*"
         ],
         "permissions": [
             "storage",
-            "declarativeNetRequest"
+            "identity"
         ],
         "browser_specific_settings": {
             "gecko": {
-                "id": "sofiane.guezzar.dynamics.sidekick@gmail.com"
+                "id": "powercrm-sidekick-zoho@frauhottelmann.github.io"
             }
         }
     },

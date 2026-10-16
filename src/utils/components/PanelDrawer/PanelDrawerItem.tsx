@@ -1,9 +1,9 @@
 import { Drawer } from "@mui/material";
 import React, { type PropsWithChildren } from "react";
-import { ProcessButton } from "../../global/.processClass";
+import type { ToolPanelButton } from "../../global/.toolPanelButton";
 
 interface PanelDrawerItemProps {
-    width: ProcessButton['width'];
+    width: ToolPanelButton['width'];
     open: boolean;
 }
 

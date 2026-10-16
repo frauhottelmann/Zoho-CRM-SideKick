@@ -173,30 +173,6 @@ export const groupBy = function (xs: any[], key: string): { [key: string]: any[]
     }, {});
 };
 
-export function actionWithDisabledSaving(action?: () => any) {
-    if (!Xrm.Page.getAttribute) return;
-
-    const attributes = Xrm.Page.getAttribute();
-
-    const attributesSubmitModeStorage = attributes.map((a) => {
-        return { attribute: a, submitMode: a.getSubmitMode() };
-    });
-
-    attributes.forEach((a) => {
-        a.setSubmitMode("never");
-    });
-
-    let result;
-    if (action) result = action();
-
-    setTimeout(() => {
-        attributesSubmitModeStorage.forEach((a) => {
-            a.attribute.setSubmitMode(a.submitMode);
-        });
-    }, 500);
-    return result;
-}
-
 export function debugLog(...args: any[]) {
     if (Env.DEBUG) {
         console.debug(...args);
@@ -206,28 +182,6 @@ export function debugError(...args: any[]) {
     if (Env.DEBUG) {
         console.error(...args);
     }
-}
-
-export async function GetPrimaryIdAttribute(entityname: string) {
-    return (await Xrm.Utility.getEntityMetadata(entityname)).PrimaryIdAttribute;
-}
-export async function GetPrimaryNameAttribute(entityname: string) {
-    return (await Xrm.Utility.getEntityMetadata(entityname)).PrimaryNameAttribute;
-}
-
-export function getCurrentDynamics365DateTimeFormat() {
-    const dateFormattingInfo = Xrm.Utility.getGlobalContext().userSettings.dateFormattingInfo;
-    const shortDatePattern = dateFormattingInfo.ShortDatePattern.replace(/\byyyy\b/, "YYYY")
-        .replace(/\bdd\b/, "DD")
-        .replace(/\bd\b/, "DD");
-    return {
-        ShortDatePattern: shortDatePattern,
-        ShortDateTimePattern: shortDatePattern + " " + dateFormattingInfo.ShortTimePattern.replace(/\btt\b/, "A"),
-        is12hours: dateFormattingInfo.ShortTimePattern.includes("tt"),
-        FullDateTimePattern: dateFormattingInfo.FullDateTimePattern.replace(/\byyyy\b/, "YYYY")
-            .replace(/\bdd\b/, "DD")
-            .replace(/\bd\b/, "DD")
-    };
 }
 
 export function yieldToMain() {

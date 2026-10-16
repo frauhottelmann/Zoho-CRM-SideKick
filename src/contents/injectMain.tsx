@@ -4,14 +4,31 @@ import { createRoot } from "react-dom/client";
 
 import { MainScreen } from "~processes/main";
 import { ProcessButton } from "~utils/global/.processClass";
+import { isZohoCrmPage } from "~utils/zoho/environment";
 import { DRAWER_CONTAINER_ID, MESSAGE_SOURCE_Content, PROJECT_PREFIX } from "~utils/global/var";
 
 export const config: PlasmoCSConfig = {
-    matches: ["*://*/*"],
+    matches: [
+        "https://crm.zoho.com/*",
+        "https://crm.zoho.eu/*",
+        "https://crm.zoho.in/*",
+        "https://crm.zoho.com.au/*",
+        "https://crm.zoho.jp/*",
+        "https://crm.zoho.com.cn/*",
+        "https://crm.zoho.sa/*",
+        "https://crm.zohocloud.ca/*",
+        "https://crmsandbox.zoho.com/*",
+        "https://crmsandbox.zoho.eu/*",
+        "https://crmsandbox.zoho.in/*",
+        "https://crmsandbox.zoho.com.au/*",
+        "https://crmsandbox.zoho.jp/*",
+        "https://crmsandbox.zoho.com.cn/*",
+        "https://crmsandbox.zoho.sa/*",
+        "https://crmsandbox.zohocloud.ca/*"
+    ],
     world: "MAIN"
 };
 
-const searchedScripts = ["/uclient/scripts/cdnEndpointCheck.js", "/uclient/scripts/MicrosoftAjax.js"];
 var messageListenerReady = false;
 
 const onMessage = (event: MessageEvent) => {
@@ -24,25 +41,24 @@ window.addEventListener("message", onMessage);
 
 export const getRootContainer = () =>
     new Promise((resolve) => {
+        let resolved = false;
         const checkAndResolve = () => {
-            const mainContent = document.querySelector("#ApplicationShell");
-            const isCRMD365 = Array.from(document.scripts).some((script) =>
-                searchedScripts.some((src) => script.src.includes(src))
-            );
+            if (resolved) return;
+            const mainContent = document.body;
 
-            if (mainContent && isCRMD365 && messageListenerReady) {
+            if (mainContent && isZohoCrmPage(window.location.href) && messageListenerReady) {
                 const drawerContainer = document.createElement("div");
                 drawerContainer.id = ProcessButton.prefixId + DRAWER_CONTAINER_ID;
                 mainContent.append(drawerContainer);
+                resolved = true;
                 observer.disconnect();
                 resolve(drawerContainer);
             }
         };
 
-        checkAndResolve();
-
         const observer = new MutationObserver(checkAndResolve);
-        observer.observe(document.body, { childList: true, subtree: true });
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+        checkAndResolve();
     });
 
 export const render: PlasmoRender<PlasmoCSUIJSXContainer> = async ({

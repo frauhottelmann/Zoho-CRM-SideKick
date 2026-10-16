@@ -126,9 +126,6 @@ devDependencies:
   '@types/react-textfit':
     specifier: ^1.1.4
     version: 1.1.4
-  '@types/xrm':
-    specifier: ^9.0.87
-    version: 9.0.87
   crypto-browserify:
     specifier: ^3.12.1
     version: 3.12.1
@@ -4442,10 +4439,6 @@ packages:
   /@types/use-sync-external-store@0.0.6:
     resolution: {integrity: sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg==}
     dev: false
-
-  /@types/xrm@9.0.87:
-    resolution: {integrity: sha512-5CQ16PpBH/8G6Ewxox1KGsshGZG/uvNiV3y0VjYVwayE3oYudEe3NUujL2dNKA1WDRus3i1tLRYqsDd0w++Evw==}
-    dev: true
 
   /@uiw/react-json-view@2.0.0-alpha.39(@babel/runtime@7.28.4)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-D9MHNan56WhtdAsmjtE9x18YLY0JSMnh0a6Ji0/2sVXCF456ZVumYLdx2II7hLQOgRMa4QMaHloytpTUHxsFRw==}

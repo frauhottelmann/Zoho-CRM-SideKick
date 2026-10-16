@@ -1,20 +1,32 @@
 import type { PlasmoCSConfig } from "plasmo";
 
+import { isZohoCrmPage } from "~utils/zoho/environment";
 import { EXTENSION_STORAGE_SUFFIX, MESSAGE_SOURCE_Content, MESSAGE_SOURCE_WebPage, PROJECT_PREFIX } from "~utils/global/var";
 
 export const config: PlasmoCSConfig = {
-    matches: ["*://*/*"],
+    matches: [
+        "https://crm.zoho.com/*",
+        "https://crm.zoho.eu/*",
+        "https://crm.zoho.in/*",
+        "https://crm.zoho.com.au/*",
+        "https://crm.zoho.jp/*",
+        "https://crm.zoho.com.cn/*",
+        "https://crm.zoho.sa/*",
+        "https://crm.zohocloud.ca/*",
+        "https://crmsandbox.zoho.com/*",
+        "https://crmsandbox.zoho.eu/*",
+        "https://crmsandbox.zoho.in/*",
+        "https://crmsandbox.zoho.com.au/*",
+        "https://crmsandbox.zoho.jp/*",
+        "https://crmsandbox.zoho.com.cn/*",
+        "https://crmsandbox.zoho.sa/*",
+        "https://crmsandbox.zohocloud.ca/*"
+    ],
     run_at: "document_start"
 };
 
-const searchedScripts = ["/uclient/scripts/cdnEndpointCheck.js", "/uclient/scripts/MicrosoftAjax.js"];
-
 window.onload = async () => {
-    const isCRMD365 = Array.from(document.scripts).some((script) =>
-        searchedScripts.some((src) => script.src.indexOf(src) !== -1)
-    );
-    console.log("This page is CRM:", isCRMD365);
-    if (isCRMD365) {
+    if (isZohoCrmPage(window.location.href)) {
         // SaveData(chrome.runtime.getURL(""), "extensionUrl");
         storeExtensionId();
         setListener();

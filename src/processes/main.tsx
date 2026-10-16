@@ -5,7 +5,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import ExtensionIcon from "@mui/icons-material/Extension";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import StarIcon from "@mui/icons-material/Star";
 import {
     Badge,
     Box,
@@ -27,12 +26,11 @@ import { WandMainIcon } from "~icons/WandMainIcon";
 import type { ToolPanelButton } from "~utils/global/.toolPanelButton";
 
 import packageJson from "../../package.json";
-import { KoFiIcon } from "../icons/BuyMeACoffee";
 import BlackWhiteIconButton from "../utils/components/BlackWhiteIconButton";
 import DetailsSnackbar from "../utils/components/DetailsSnackbar";
 import OpenOptionsButton from "../utils/components/OpenOptionsButton";
 import PanelDrawerItem from "../utils/components/PanelDrawer/PanelDrawerItem";
-import { debugLog, getBridgeEventName, GetExtensionId, isArraysEquals, setStyle } from "../utils/global/common";
+import { debugLog, getBridgeEventName, isArraysEquals, setStyle } from "../utils/global/common";
 import MessageManager from "../utils/global/MessageManager";
 import SpDevToolsContextProvider, { useSpDevTools } from "../utils/global/spContext";
 import {
@@ -115,24 +113,17 @@ const MainScreenCustomPanel: React.FunctionComponent = () => {
         const setPageStyle = async () => {
             let drawerButtonWidth = isMainDrawerOpened ? DRAWER_BUTTON_CONTAINER_WIDTH : 0;
 
-            setStyle(document, "drawerbuttonsmain", {
-                "#shell-container": [`width: calc(100% - ${drawerButtonWidth}px)`]
-            });
-
-            let dynamicsmainscreenWidth = 0;
+            let panelWidth = 0;
             if (!isForegroundPanes && panelOpenedId !== null && isMainDrawerOpened) {
                 if (panelOpenedId !== MAIN_MENU_ID && openedProcesses[panelOpenedId].widthNumber > 0) {
-                    dynamicsmainscreenWidth = openedProcesses[panelOpenedId].widthNumber;
+                    panelWidth = openedProcesses[panelOpenedId].widthNumber;
                 } else {
-                    dynamicsmainscreenWidth = MAIN_MENU_WIDTH;
+                    panelWidth = MAIN_MENU_WIDTH;
                 }
             }
-            setStyle(document, "resizedynamicsmainscreen", {
-                "#ApplicationShell > *:not(*:first-child)": [`width: calc(100% - ${dynamicsmainscreenWidth}px)`],
-                // "#mainContent > *:first-child": [`width: calc(100% - ${dynamicsmainscreenWidth}px)`],
-                "[id^=DialogContainer]": [`width: calc(100% - ${dynamicsmainscreenWidth}px)`],
-                // "[id^=DialogContainer]": [`width: calc(100% - ${drawerButtonWidth}px - ${dynamicsmainscreenWidth}px)`],
-                "[id*=__flyoutRootNode] > div > div": ["z-index: 1200"]
+            // Make room for the side bar and the opened panel next to the Zoho CRM page
+            setStyle(document, "resizezohomainscreen", {
+                body: [`width: calc(100% - ${drawerButtonWidth + panelWidth}px) !important`]
             });
         };
 
@@ -465,8 +456,6 @@ function MainScreenFooter() {
     const { enqueueSnackbar } = useSnackbar();
     const { isDebug } = useSpDevTools();
 
-    const extensionId = GetExtensionId();
-
     const handleHiddenAction = useCallback(() => {
         clickCount++;
 
@@ -482,60 +471,13 @@ function MainScreenFooter() {
         }
     }, [isDebug, enqueueSnackbar]);
 
-    const navigatorType = useMemo(() => {
-        if (navigator.userAgent.includes("Firefox")) {
-            return "Firefox";
-        } else if (navigator.userAgent.includes("Edg")) {
-            return "Edge";
-        } else {
-            return "Chrome";
-        }
-    }, []);
-
-    const reviewUrl = useMemo(() => {
-        switch (navigatorType) {
-            case "Edge":
-                return `https://microsoftedge.microsoft.com/addons/detail/d365-sidepanel-dev-tools/${extensionId}`;
-            case "Chrome":
-                return `https://chromewebstore.google.com/detail/d365-sidepanel-dev-tools/${extensionId}/reviews`;
-            case "Firefox":
-                return "https://addons.mozilla.org/en-US/firefox/addon/powercrm-sidekick-365/";
-            default:
-                return "";
-        }
-    }, [navigatorType]);
-
     return (
         <Paper elevation={0}>
             <Stack direction="column">
                 <Divider />
                 <Stack spacing={1} mt="5px" direction="row" alignItems="center" ml="auto">
-                    <Tooltip title={<Typography>Send a review</Typography>} arrow disableInteractive>
-                        <a href={reviewUrl} target="_blank" rel="noreferrer">
-                            <BlackWhiteIconButton size="small" color="#FDCC0D">
-                                <StarIcon fontSize="inherit" sx={{ stroke: "black" }} />
-                            </BlackWhiteIconButton>
-                        </a>
-                    </Tooltip>
-                    <Tooltip
-                        title={<Typography fontFamily="'Cookie',cursive">Buy me a Ko-fi</Typography>}
-                        arrow
-                        disableInteractive>
-                        <a href="https://ko-fi.com/sofianeguezzar" target="_blank" rel="noreferrer">
-                            <BlackWhiteIconButton size="small" color="#0388a6">
-                                <KoFiIcon fontSize="inherit" sx={{ height: "15px" }} />
-                            </BlackWhiteIconButton>
-                        </a>
-                    </Tooltip>
-                    {/* <Tooltip title={<Typography fontFamily="'Cookie',cursive">Buy me a coffee</Typography>} arrow disableInteractive>
-                        <a href='https://buymeacoffee.com/sofiane.guezzar' target="_blank" rel="noreferrer">
-                            <BlackWhiteIconButton size="small" color='#0388a6'>
-                                <BuyMeACoffeeIcon fontSize="inherit" sx={{ height: '15px' }} />
-                            </BlackWhiteIconButton>
-                        </a>
-                    </Tooltip> */}
                     <Tooltip title={<Typography>Github project</Typography>} arrow disableInteractive>
-                        <a href="https://github.com/SofianeGUEZZAR/PowerCRM-SideKick-365" target="_blank" rel="noreferrer">
+                        <a href="https://github.com/frauhottelmann/PowerCRM-SideKick-365" target="_blank" rel="noreferrer">
                             <BlackWhiteIconButton size="small" color="#2dba4e">
                                 <GitHubIcon fontSize="inherit" />
                             </BlackWhiteIconButton>
@@ -543,7 +485,7 @@ function MainScreenFooter() {
                     </Tooltip>
                     <Tooltip title={<Typography>Report an issue</Typography>} arrow disableInteractive>
                         <a
-                            href="https://github.com/SofianeGUEZZAR/PowerCRM-SideKick-365/issues/new"
+                            href="https://github.com/frauhottelmann/PowerCRM-SideKick-365/issues/new"
                             target="_blank"
                             rel="noreferrer">
                             <BlackWhiteIconButton size="small" color="#df5050">

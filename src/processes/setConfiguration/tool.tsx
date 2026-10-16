@@ -325,7 +325,7 @@ const SetConfiguration = forwardRef<ProcessRef, ProcessProps>(function SetConfig
                 disableInteractive
                 title={
                     <Typography variant="body2">
-                        Enable/Disable automatic width adjustments of the main Dynamics screen.
+                        Enable/Disable automatic width adjustments of the main Zoho CRM screen.
                     </Typography>
                 }>
                 <FormControl fullWidth sx={{ pl: 2 }}>
