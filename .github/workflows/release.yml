@@ -40,8 +40,8 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           mkdir dist
-          cp build/chrome-mv3-prod.zip "dist/powercrm-sidekick-zoho-chrome-$VERSION.zip"
-          cp build/firefox-mv3-prod.zip "dist/powercrm-sidekick-zoho-firefox-$VERSION.zip"
+          cp build/chrome-mv3-prod.zip "dist/zoho-crm-sidekick-chrome-$VERSION.zip"
+          cp build/firefox-mv3-prod.zip "dist/zoho-crm-sidekick-firefox-$VERSION.zip"
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:

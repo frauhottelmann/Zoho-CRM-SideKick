@@ -16,7 +16,7 @@ import type { StorageConfiguration } from "~utils/types/StorageConfiguration";
 
 import packageJson from "../package.json";
 
-const REPOSITORY_URL = "https://github.com/frauhottelmann/PowerCRM-SideKick-365";
+const REPOSITORY_URL = "https://github.com/frauhottelmann/Zoho-CRM-SideKick";
 
 const OptionsScreen: React.FunctionComponent = () => {
     const [, setProcessList] = useChromeStorage<StorageConfiguration[]>(STORAGE_ListName);

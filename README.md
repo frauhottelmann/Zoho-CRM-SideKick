@@ -1,5 +1,5 @@
-PowerCRM SideKick Zoho
-======================
+Zoho CRM SideKick
+=================
 
 A browser extension (Chrome, Edge and Firefox, Manifest V3) that adds a side panel to Zoho CRM pages with tools for administrators.
 
@@ -36,7 +36,7 @@ Load `build/chrome-mv3-dev` (or `-prod`) as an unpacked extension in `chrome://e
 
 ### Releases
 
-Publishing a GitHub release runs `.github/workflows/release.yml`, which builds the Chrome and Firefox packages and attaches them to the release as `powercrm-sidekick-zoho-chrome-<version>.zip` and `powercrm-sidekick-zoho-firefox-<version>.zip`. A tag like `v0.2.0` sets the extension version to `0.2.0`. The workflow can also be started by hand from the Actions tab; the zips are then available as a workflow artifact.
+Publishing a GitHub release runs `.github/workflows/release.yml`, which builds the Chrome and Firefox packages and attaches them to the release as `zoho-crm-sidekick-chrome-<version>.zip` and `zoho-crm-sidekick-firefox-<version>.zip`. A tag like `v0.2.0` sets the extension version to `0.2.0`. The workflow can also be started by hand from the Actions tab; the zips are then available as a workflow artifact.
 
 ### Structure
 
