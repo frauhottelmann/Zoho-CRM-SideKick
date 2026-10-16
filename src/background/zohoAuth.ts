@@ -2,6 +2,7 @@
 // Runs in the background worker: it holds the tokens and is not subject to the page's CORS rules.
 
 import { STORAGE_ZohoClientId } from "~utils/global/var";
+import { ZOHO_DEFAULT_CLIENT_ID } from "~utils/zoho/config";
 import { getZohoEnvironment, type ZohoEnvironment } from "~utils/zoho/environment";
 import type { ZohoApiRequest, ZohoApiResponse, ZohoAuthStatus } from "~utils/zoho/types";
 
@@ -23,7 +24,8 @@ export function getRedirectUri(): string {
 async function getClientId(): Promise<string | null> {
     const stored = await chrome.storage.sync.get(STORAGE_ZohoClientId);
     const clientId = stored?.[STORAGE_ZohoClientId];
-    return typeof clientId === "string" && clientId.trim() ? clientId.trim() : null;
+    if (typeof clientId === "string" && clientId.trim()) return clientId.trim();
+    return ZOHO_DEFAULT_CLIENT_ID || null;
 }
 
 export async function setClientId(clientId: string | null) {

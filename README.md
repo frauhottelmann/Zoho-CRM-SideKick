@@ -18,18 +18,20 @@ All data access is **read-only** (scopes `ZohoCRM.settings.READ`, `ZohoCRM.modul
 
 ## Setup
 
-The tools call the Zoho CRM REST API (v8), so the extension needs an OAuth client:
+The tools call the Zoho CRM REST API (v8) with the signed-in user's own permissions. Users only click **Log in with Zoho**; the OAuth client belongs to the extension and is registered **once** by its maintainer:
 
-1. Install the extension (see *Development* below) and open its popup from the browser toolbar. It shows the **redirect URI** of your installation.
-2. In the Zoho API Console of your data center (for example https://api-console.zoho.eu), add a client of type **Client-based Applications**:
-   - Homepage URL: any URL, for example this repository
-   - Authorized Redirect URI: the redirect URI from the popup
-3. Copy the client ID into the popup and save.
-4. Open Zoho CRM, open a tool from the magic wand menu and click **Log in with Zoho**.
+1. In the Zoho API Console (for example https://api-console.zoho.eu) add a client of type **Client-based Applications** and enable multi-DC for it.
+   - Homepage URL: this repository
+   - Authorized Redirect URIs:
+     - Chrome / Edge: `https://mamgfglelcnkmhalinaghngoohmpfidb.chromiumapp.org/`
+     - Firefox: `https://e2c23a8c27750856e61f296b4db623458ba1c2c3.extensions.allizom.org/`
+2. Put the client ID into `ZOHO_DEFAULT_CLIENT_ID` in `src/utils/zoho/config.ts` and rebuild.
 
-The extension uses the implicit grant: it never sees a client secret or a refresh token. Access tokens are kept in local extension storage and expire after an hour; the extension silently requests a new one while your Zoho session is active.
+The redirect URIs stay the same because the extension ID is fixed: `key` in the manifest section of `package.json` (Chrome) and the Gecko ID (Firefox). A store listing gets its own ID, so add the store's redirect URI to the client as well. The popup shows the redirect URI of the running installation and lets you override the client ID for testing.
 
-Supported data centers: `zoho.com`, `zoho.eu`, `zoho.in`, `zoho.com.au`, `zoho.jp`, `zoho.com.cn`, `zoho.sa`, `zohocloud.ca`, including their `crmsandbox` hosts. If your client was created in another data center than your org, enable multi-DC for it in the API Console.
+The extension uses the implicit grant: there is no client secret and no refresh token. Access tokens are kept in local extension storage and expire after an hour; the extension silently requests a new one while the user's Zoho session is active.
+
+Supported data centers: `zoho.com`, `zoho.eu`, `zoho.in`, `zoho.com.au`, `zoho.jp`, `zoho.com.cn`, `zoho.sa`, `zohocloud.ca`, including their `crmsandbox` hosts.
 
 ## Development
 
@@ -39,7 +41,7 @@ pnpm dev            # development build with live reload (build/chrome-mv3-dev)
 pnpm build          # production builds for Chrome and Firefox
 ```
 
-Load `build/chrome-mv3-dev` (or `-prod`) as an unpacked extension in `chrome://extensions`. The redirect URI depends on the extension ID, so register the one shown by the build you use.
+Load `build/chrome-mv3-dev` (or `-prod`) as an unpacked extension in `chrome://extensions`.
 
 ### Structure
 
